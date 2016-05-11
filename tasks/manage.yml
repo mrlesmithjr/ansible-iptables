@@ -59,7 +59,7 @@
   changed_when: false
   with_items: '{{ iptables_default_policies }}'
 
-- name: manage | etting default policies
+- name: manage | setting default policies
   command: "iptables -P {{ item.item.name }} {{ item.item.policy }}"
   with_items: '{{ policies.results }}'
   when: item.rc == 1
