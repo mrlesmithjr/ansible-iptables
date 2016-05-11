@@ -13,18 +13,30 @@
     purge: yes
   when: not iptables_persistent
 
-- name: debian | enabling iptables-persistent restore on boot (if enabled)
+- name: debian | enabling iptables restore on boot (if enabled)
   lineinfile:
     dest: "/etc/network/interfaces"
-    regexp: "^pre-up iptables-restore < /etc/iptables/rules.{{ item }}"
-    line: "pre-up iptables-restore < /etc/iptables/rules.{{ item }}"
-  with_items: '{{ iptables_enabled_versions }}'
+    regexp: "^pre-up iptables-restore < {{ iptables_save_file }}"
+    line: "pre-up iptables-restore < {{ iptables_save_file }}"
   when: iptables_persistent
 
-- name: debian | disabling iptables-persistent restore on boot (if not enabled)
+- name: debian | disabling iptables restore on boot (if not enabled)
   lineinfile:
     dest: "/etc/network/interfaces"
-    regexp: "^pre-up iptables-restore < /etc/iptables/rules.{{ item }}"
+    regexp: "^pre-up iptables-restore < {{ iptables_save_file }}"
     line: ""
-  with_items: '{{ iptables_enabled_versions }}'
+  when: not iptables_persistent
+
+- name: debian | enabling iptables save on shutdown (if enabled)
+  lineinfile:
+    dest: "/etc/network/interfaces"
+    regexp: "^post-down iptables-save -c > {{ iptables_save_file }}"
+    line: "post-down iptables-save -c > {{ iptables_save_file }}"
+  when: iptables_persistent
+
+- name: debian | disabling iptables save on shutdown (if not enabled)
+  lineinfile:
+    dest: "/etc/network/interfaces"
+    regexp: "^post-down iptables-save -c > {{ iptables_save_file }}"
+    line: ""
   when: not iptables_persistent

@@ -46,7 +46,7 @@
     - rules
 
 - name: manage | saving persistent rules (if enabled)
-  command: "service iptables-persistent save"
+  shell: "iptables-save -c > {{ iptables_save_file }}"
   when: >
         iptables_persistent and
         (rules.changed or
