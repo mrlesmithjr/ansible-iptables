@@ -1,0 +1,30 @@
+---
+- name: debian | installing iptables-persistent package (if enabled)
+  apt:
+    name: "iptables-persistent"
+    state: present
+  register: iptables_persistent_enabled
+  when: iptables_persistent
+
+- name: debian | un-installing iptables-persistent package (if not enabled)
+  apt:
+    name: "iptables-persistent"
+    state: absent
+    purge: yes
+  when: not iptables_persistent
+
+- name: debian | enabling iptables-persistent restore on boot (if enabled)
+  lineinfile:
+    dest: "/etc/network/interfaces"
+    regexp: "^pre-up iptables-restore < /etc/iptables/rules.{{ item }}"
+    line: "pre-up iptables-restore < /etc/iptables/rules.{{ item }}"
+  with_items: '{{ iptables_enabled_versions }}'
+  when: iptables_persistent
+
+- name: debian | disabling iptables-persistent restore on boot (if not enabled)
+  lineinfile:
+    dest: "/etc/network/interfaces"
+    regexp: "^pre-up iptables-restore < /etc/iptables/rules.{{ item }}"
+    line: ""
+  with_items: '{{ iptables_enabled_versions }}'
+  when: not iptables_persistent
