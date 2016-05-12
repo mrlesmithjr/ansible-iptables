@@ -102,10 +102,11 @@ iptables_default_policies:
     policy: 'ACCEPT'
 iptables_flush_chains: false  #Defines if user-defined chains should be flushed
 iptables_flush_rules: false  #Defines if rules should be flushed
-iptables_persistent: true  #Defines if rules should be persistent across reboots
 iptables_enabled_versions:  #Defines IP versions to define
   - 'v4'
 #  - 'v6'
+iptables_persistent: true  #Defines if rules should be persistent across reboots
+iptables_save_file: '/etc/iptables.rules'
 ````
 
 Dependencies
